@@ -1,0 +1,231 @@
+<p>{user.name}</p>
+<p>{user.email}</p>
+<p>{String(user.createdAt).substring(0, 10)}</p>
+user.role !== 'admin' &&
+src={user.avatar.url} alt={user.name}
+
+
+/* User Profile */
+
+.avatar-profile {
+    height: 16rem;
+    width: 16rem;
+  }
+  
+  .user-info h4 {
+    font-weight: 800;
+    color: grey;
+    margin-top: 2rem;
+  }
+  
+  .user-info p {
+    font-size: 1.1rem;
+  }
+  
+  #edit_profile {
+    background-color: #fa9c23;
+    border-color: #fa9c23;
+  }
+
+  //user profile
+  import React from 'react';
+import { Container,Row,Col,Form ,Button} from 'react-bootstrap';
+import {connect} from 'react-redux';
+import DefaultUserPic from "../uploads/team-male.jpg";
+const axios = require('axios');
+
+class UserProfile extends React.Component {
+    constructor(props){
+        super(props);
+        this.state={
+            user_id:this.props.user_id,
+            username:this.props.username,
+            email:this.props.email,
+            profileImage:this.props.profileImage,
+            msg:this.props.msg,
+            uploadedFile:null
+        }
+    }
+
+    fetchUserDetails=(user_id)=>{
+        //console.log(user_id);
+        axios.get("http://localhost:5000/userapi/getUserDetails/"+user_id,{
+            headers: {
+                "content-type": "application/json"
+              }
+        }).then(res=>{
+            console.log(res);
+            this.setState({email:res.data.results[0].email});
+            this.setState({profileImage:res.data.results[0].profileImage})
+        })
+        .catch(err=>console.log(err))
+    }
+
+    changeProfileImage=(event)=>{
+       
+        this.setState({uploadedFile:event.target.files[0]});
+    }
+
+    UpdateProfileHandler=(e)=>{
+        e.preventDefault();
+        //create object of form data
+        const formData=new FormData();
+        formData.append("profileImage",this.state.uploadedFile);
+        formData.append("user_id",this.state.user_id);
+
+        //update-profile
+        axios.post("http://localhost:5000/userapi/update-profile/",formData,{
+            headers: {
+                "content-type": "application/json"
+              }
+        }).then(res=>{
+            console.log(res);
+           this.setState({msg:res.data.message});
+           this.setState({profileImage:res.data.results.profileImage});
+        })
+        .catch(err=>console.log(err))
+    }
+
+
+    componentDidMount(){
+     this.fetchUserDetails(this.state.user_id);
+    }
+
+render(){
+
+    if(this.state.profileImage){
+        var imagestr=this.state.profileImage;
+        imagestr = imagestr.replace("public/", "");
+        var profilePic="http://localhost:5000/"+imagestr;
+    }else{
+         profilePic=DefaultUserPic;
+    }
+
+    return (
+        <Container>
+        <Row>
+       <Col>
+       <img src={profilePic} alt="profils pic" />
+       </Col>
+        <Col>
+            <h1>User Profile</h1>
+            <Form className="form">     
+    <p>{this.state.msg}</p>
+  <Form.Group controlId="formCategory1">
+    <Form.Label>Username</Form.Label>
+    <Form.Control type="text" defaultValue={this.state.username}/>
+  
+  </Form.Group>
+  <Form.Group controlId="formCategory2">
+    <Form.Label>Email</Form.Label>
+    <Form.Control type="email" defaultValue={this.state.email} />
+  
+  </Form.Group>
+ 
+  <Form.Group controlId="formCategory4">
+    <Form.Label>Profile Image</Form.Label>
+    <Form.Control type="file" name="profileImage" onChange={this.changeProfileImage}/>
+    </Form.Group>
+  <Button variant="primary" onClick={this.UpdateProfileHandler}>Update Profile</Button>
+  </Form>
+   </Col>
+
+       </Row>
+        </Container>
+    )
+}
+}
+
+const mapStatetoProps=(state)=>{
+    return{
+        user_id:state.user.userDetails.userid,
+        username:state.user.userDetails.username,
+       email:state.user.email,
+       profileImage: state.user.profileImage,
+       msg:state.user.msg
+    }
+   }
+   
+   
+
+   export default connect(mapStatetoProps)(UserProfile);
+
+   /* User Profile */
+
+.avatar-profile {
+    height: 16rem;
+    width: 16rem;
+  }
+  
+  .user-info h4 {
+    font-weight: 800;
+    color: grey;
+    margin-top: 2rem;
+  }
+  
+  .user-info p {
+    font-size: 1.1rem;
+  }
+  
+  #edit_profile {
+    background-color: #fa9c23;
+    border-color: #fa9c23;
+  }
+
+  userDetails
+
+  const User = () => { 
+  return (
+    
+        <Fragment>
+             {(
+                <Fragment>
+                    
+
+                    <h2 className="mt-5 ml-5">My Profile</h2>
+                    <div className="row justify-content-around mt-5 user-info">
+                        <div className="col-12 col-md-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+</svg>
+                            {/* <figure className='avatar avatar-profile'>
+                                <img className="rounded-circle img-fluid"  />
+                            </figure> */}
+                            <li>
+                            <Link to="/me/update" id="edit_profile" className="btn btn-primary btn-block my-5">
+                                Edit Profile
+                            </Link>
+                            </li>
+                        </div>
+
+                        <div className="col-12 col-md-5">
+                            <h4>Full Name</h4>
+                            
+
+                            <h4>Email Address</h4>
+                            
+
+                            <h4>Joined On</h4>
+                           
+
+                            {(
+                                <li>
+                                <Link to="#" className="btn btn-danger btn-block mt-5">
+                                    MY playlists
+                                </Link>
+                                </li>
+                            )}
+                            <li>
+                            <Link to="#" className="btn btn-primary btn-block mt-3">
+                                Change Password
+                            </Link>
+                            </li>
+                        </div>
+                    </div>
+                </Fragment>
+            )}
+        </Fragment>
+    )
+ }
+  export default User;

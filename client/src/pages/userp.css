@@ -1,0 +1,11 @@
+.userpn {
+  align-content: center;
+}
+
+.rounded {
+  border-radius: 50% !important;
+  border-top-left-radius: 50% !important;
+  border-top-right-radius: 50% !important;
+  border-bottom-right-radius: 50% !important;
+  border-bottom-left-radius: 50% !important;
+}
